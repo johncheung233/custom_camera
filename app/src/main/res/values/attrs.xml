@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="custom_progress_bar">
+        <attr name="progressColor" format="color"/>
+        <attr name="restColor" format="color"/>
+        <attr name="maxValue" format="integer"/>
+        <attr name="silderWidth" format="integer"/>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <zhangchongantest.neu.edu.newtest.CustomProgressBar
+        android:id="@+id/customProgressBar"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        app:silderWidth = "15"/>
+
+    <Button
+        android:id="@+id/button_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/customProgressBar"
+        android:background="@drawable/bg_progressbar"
+        android:text="add" />
+    <ImageView
+        android:id="@+id/imageView_picture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_add"/>
+    <Button
+        android:id="@+id/button_customCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/button_add"
+        android:layout_below="@id/customProgressBar"
+        android:text="custom_camera"
+        android:background="@drawable/bg_stroke"/>
+</RelativeLayout>
