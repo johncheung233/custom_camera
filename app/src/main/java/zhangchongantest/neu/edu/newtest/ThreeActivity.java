@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,6 +58,8 @@ public class ThreeActivity extends AppCompatActivity {
     private Bitmap reslutBitmap;
 
     private int CODE_TAKE_CUSTOM_PHOT0 = 10011;
+
+    private int CODE_DISPLAY_PHOT0 = 10012;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -136,7 +140,16 @@ public class ThreeActivity extends AppCompatActivity {
         }
         if (requestCode == CODE_TAKE_CUSTOM_PHOT0){
             if (resultCode == RESULT_OK){
-                handler.post(getPhoto);
+//                handler.post(getPhoto);
+                startActivityForResult(new Intent(ThreeActivity.this,
+                        PictureDisplayActivity.class),CODE_DISPLAY_PHOT0);
+            }
+        }
+        if (requestCode == CODE_DISPLAY_PHOT0){
+            if (resultCode == RESULT_OK){
+
+            }else if (resultCode ==RESULT_CANCELED){
+                Toast.makeText(this,"文件打开失败",Toast.LENGTH_LONG);
             }
         }
     }

@@ -5,9 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
+import android.media.ExifInterface;
 import android.util.Log;
 import android.view.Surface;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -208,19 +210,20 @@ public class CameraUtil {
 
     /**
      * 根据 宽度和高度找到是否有相等的 尺寸  如果没有 就获取最小的 值
-     * @param list list
-     * @param th 高度
-     * @param minWidth 宽度
+     *
+     * @param list   list
+     * @param height 高度
+     * @param width  宽度
      * @return size
      */
-    public  Size getPicPreviewSize(List<Camera.Size> list, int th, int minWidth){
+    public Size getPicPreviewSize(List<Camera.Size> list, int height, int width) {
         Collections.sort(list, ascendSizeComparator);
 
         int i = 0;
-        for(int x=0;x<list.size();x++){
+        for (int x = 0; x < list.size(); x++) {
             Size s = list.get(x);
             // camera 中的宽度和高度 相反 因为测试板子原因 这里暂时 替换 && 为 ||
-            if((s.width == th) && (s.height == minWidth)){
+            if ((s.width == height) || (s.height == width)) {
                 i = x;
                 break;
             }
@@ -229,18 +232,17 @@ public class CameraUtil {
         return list.get(i);
     }
 
-    public Size getPropPictureSize(List<Camera.Size> list, float th, int minWidth){
+    public Size getPropPictureSize(List<Camera.Size> list, float th, int minWidth) {
         Collections.sort(list, ascendSizeComparator);
 
         int i = 0;
-        for(Size s:list){
-            if((s.width >= minWidth) && equalRate(s, th)){
-                Log.i(TAG, "PictureSize : w = " + s.width + "h = " + s.height);
+        for (Size s : list) {
+            if ((s.width >= minWidth) && equalRate(s, th)) {
                 break;
             }
             i++;
         }
-        if(i == list.size()){
+        if (i == list.size()) {
             i = 0;//如果没找到，就选最小的size
         }
         return list.get(i);
@@ -414,5 +416,42 @@ public class CameraUtil {
                 mCamera.setParameters(parameters);
             }
         }
+    }
+
+    public int readPictureDegree(String path) {
+        int degree = 0;
+        try {
+            ExifInterface exifInterface = new ExifInterface(path);
+            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            Log.d("custom", "orientation:" + orientation);
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    degree = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    degree = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    degree = 270;
+                    break;
+                case ExifInterface.ORIENTATION_UNDEFINED:
+
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return degree;
+    }
+
+    public Bitmap rotaingImageView(int angle, Bitmap bitmap) {
+        if (angle == 0 || null == bitmap) {
+            return bitmap;
+        }
+        Matrix matrix = new Matrix();
+        matrix.setRotate(angle, bitmap.getWidth() / 2, bitmap.getHeight() / 2);
+        Bitmap bmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        bitmap.recycle();
+        return bmp;
     }
 }

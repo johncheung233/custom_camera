@@ -26,7 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class CustomCameraActivity extends AppCompatActivity implements SurfaceHolder.Callback{
+public class CustomCameraActivity extends AppCompatActivity implements SurfaceHolder.Callback {
     @BindView(R.id.surfaceView)
     SurfaceView surfaceView;
     @BindView(R.id.iv_back)
@@ -48,8 +48,8 @@ public class CustomCameraActivity extends AppCompatActivity implements SurfaceHo
     private CameraUtil cameraInstance;
     private int cameraId = 0;
 
-    private int screenHeight;
-    private int screenWidth;
+    private int screenHeight; //px
+    private int screenWidth;  //px
     private int picWidth;
     private int picHeight;
     private boolean isView = true;
@@ -65,16 +65,16 @@ public class CustomCameraActivity extends AppCompatActivity implements SurfaceHo
         DisplayMetrics dm = getResources().getDisplayMetrics();
         screenWidth = dm.widthPixels;
         screenHeight = dm.heightPixels;
-        Log.d("custom","screenWidth:"+screenWidth+"   screenHeight:"+screenHeight);
+        Log.d("custom", "screenWidth:" + screenWidth + "   screenHeight:" + screenHeight);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (mCamera==null){
+        if (mCamera == null) {
             mCamera = android.hardware.Camera.open(cameraId);
-            if (mHolder !=null){
-                startPreview(mCamera,mHolder);
+            if (mHolder != null) {
+                startPreview(mCamera, mHolder);
             }
         }
     }
@@ -120,7 +120,7 @@ public class CustomCameraActivity extends AppCompatActivity implements SurfaceHo
         parameters.setPreviewSize(previewSize.width, previewSize.height);
 
         Camera.Size pictrueSize = cameraInstance.getPicPreviewSize(parameters.getSupportedPictureSizes(),
-                screenHeight,screenWidth);
+                screenHeight, screenWidth);
         parameters.setPictureSize(pictrueSize.width, pictrueSize.height);
         camera.setParameters(parameters);
         // picHeight = (screenWidth * pictrueSize.width) / pictrueSize.height;
@@ -164,13 +164,13 @@ public class CustomCameraActivity extends AppCompatActivity implements SurfaceHo
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        startPreview(mCamera,holder);
+        startPreview(mCamera, holder);
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         mCamera.stopPreview();
-        startPreview(mCamera,holder);
+        startPreview(mCamera, holder);
     }
 
     @Override
@@ -200,7 +200,7 @@ public class CustomCameraActivity extends AppCompatActivity implements SurfaceHo
                 isView = false;
                 //将data 转换为位图 或者你也可以直接保存为文件使用 FileOutputStream
                 //这里我相信大部分都有其他用处把 比如加个水印 后续再讲解
-                Bitmap bitmap =ToolUtils.bytes2Bitmap(data);
+                Bitmap bitmap = ToolUtils.bytes2Bitmap(data);
                 File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
                 if (!mediaStorageDir.exists()) {
                     if (!mediaStorageDir.mkdirs()) {
@@ -211,17 +211,19 @@ public class CustomCameraActivity extends AppCompatActivity implements SurfaceHo
                         + "Pictures/temp.jpg");
                 try {
                     FileOutputStream fos = new FileOutputStream(mediaFile);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG,100,fos);
+                    bitmap = cameraInstance.rotaingImageView(90, bitmap);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                     fos.flush();
                     fos.close();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
-                }finally {
+                } finally {
                     setResult(RESULT_OK);
                     finish();
                 }
+
             }
         });
 

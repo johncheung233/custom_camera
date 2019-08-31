@@ -101,7 +101,6 @@ public class CustomProgressBar extends View {
         RectF rectF = new RectF(0, 0, viewSize.x, viewSize.y);
 
         canvas.drawRoundRect(rectF, 30, 30, mSliderPaint);
-        Log.d("test", "11111");
     }
 
     public void updateValue(int value) {

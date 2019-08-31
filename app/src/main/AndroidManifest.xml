@@ -48,6 +48,10 @@
         <activity android:name=".CustomCameraActivity"
             android:launchMode="singleTop">
         </activity>
+
+        <activity android:name=".PictureDisplayActivity"
+            android:launchMode="singleTop">
+        </activity>
         
         <provider
             android:authorities="zhangchongantest.neu.edu.newtest.provider"
