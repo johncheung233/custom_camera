@@ -26,7 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class CustomCameraActivity extends AppCompatActivity implements SurfaceHolder.Callback {
+public class CustomCameraActivity extends AppCompatActivity {
     @BindView(R.id.surfaceView)
     SurfaceView surfaceView;
     @BindView(R.id.iv_back)
@@ -60,7 +60,23 @@ public class CustomCameraActivity extends AppCompatActivity implements SurfaceHo
         setContentView(R.layout.activity_custom_camera);
         ButterKnife.bind(this);
         mHolder = surfaceView.getHolder();
-        mHolder.addCallback(this);
+        mHolder.addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder holder) {
+                startPreview(mCamera, holder);
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                mCamera.stopPreview();
+                startPreview(mCamera, holder);
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) {
+                releaseCamera();
+            }
+        });
         cameraInstance = CameraUtil.getInstance();
         DisplayMetrics dm = getResources().getDisplayMetrics();
         screenWidth = dm.widthPixels;
@@ -160,22 +176,6 @@ public class CustomCameraActivity extends AppCompatActivity implements SurfaceHo
         if (mHolder != null) {
             startPreview(mCamera, mHolder);
         }
-    }
-
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        startPreview(mCamera, holder);
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        mCamera.stopPreview();
-        startPreview(mCamera, holder);
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        releaseCamera();
     }
 
     /**

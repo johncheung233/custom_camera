@@ -3,10 +3,8 @@ package zhangchongantest.neu.edu.newtest;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ProviderInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.ImageFormat;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,7 +28,6 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import butterknife.BindView;
@@ -56,6 +53,7 @@ public class ThreeActivity extends AppCompatActivity {
     private ImageView ivPicture;
     private Bitmap decodeBitmap;
     private Bitmap reslutBitmap;
+    private Bitmap tempBitmap;
 
     private int CODE_TAKE_CUSTOM_PHOT0 = 10011;
 
@@ -83,7 +81,8 @@ public class ThreeActivity extends AppCompatActivity {
                 }
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 imageUri = ToolUtils.getOutPutMediaFileUri(ThreeActivity.this);
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                cameraIntent.putExtra(MediaStore.EXTRA_SHOW_ACTION_ICONS, imageUri);
+                cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 0);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     cameraIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 }
@@ -135,12 +134,19 @@ public class ThreeActivity extends AppCompatActivity {
         if (requestCode == TAKE_PICTURE) {
             Log.d("TAG:", "resultCode:" + resultCode);
             if (resultCode == RESULT_OK) {
-                handler.post(runnable);
+                if (data!=null){
+                    tempBitmap = (Bitmap) data.getExtras().get("data");
+                    if (tempBitmap!=null){
+                        handler.post(compressPhoto);
+                        return;
+                    }
+                }
+                Toast.makeText(this,"take photot fail",Toast.LENGTH_LONG).show();
             }
         }
         if (requestCode == CODE_TAKE_CUSTOM_PHOT0){
             if (resultCode == RESULT_OK){
-//                handler.post(getPhoto);
+//                handler.post(getPhotoFromStoragePhoto);
                 startActivityForResult(new Intent(ThreeActivity.this,
                         PictureDisplayActivity.class),CODE_DISPLAY_PHOT0);
             }
@@ -154,7 +160,18 @@ public class ThreeActivity extends AppCompatActivity {
         }
     }
 
-    Runnable getPhoto = new Runnable(){
+    Runnable compressPhoto = new Runnable() {
+        @Override
+        public void run() {
+            reslutBitmap = ToolUtils.compressImage(tempBitmap);
+            handler.sendEmptyMessage(2);
+        }
+    };
+
+    /**
+     * get photo from file
+     */
+    Runnable getPhotoFromStoragePhoto = new Runnable(){
         @Override
         public void run() {
             File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
@@ -180,7 +197,7 @@ public class ThreeActivity extends AppCompatActivity {
         /**
      * bitmap decode and encode
      */
-    Runnable runnable = new Runnable() {
+    Runnable DecodeRunnable = new Runnable() {
         @Override
         public void run() {
             Bitmap resultBitmap = ToolUtils.getBitmapFromUri(ThreeActivity.this, imageUri);
