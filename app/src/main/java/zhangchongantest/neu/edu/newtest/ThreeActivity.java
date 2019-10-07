@@ -44,7 +44,7 @@ public class ThreeActivity extends AppCompatActivity {
     @BindView(R.id.button_customCamera)
     Button buttonCustomCamera;
     private String TAG = "test";
-    int i = 0;
+    int i = 100000;
     private int TAKE_PICTURE = 10086;
     private int REQUEST_PERMISSION = 10010;
     private Boolean isGranted = false;
